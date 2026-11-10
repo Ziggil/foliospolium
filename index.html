@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foliospolium — Трекер чтения</title>
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <!-- Подключаем шрифты (опционально, для книжного стиля) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Шапка сайта -->
+    <header>
+        <h1>Foliospolium</h1>
+        <p>Твой книжный путь и трофеи</p>
+    </header>
+
+    <!-- Навигация по вкладкам (SPA) -->
+    <nav class="tabs">
+        <button class="tab-btn active" data-target="view-progress">Мой Прогресс</button>
+        <button class="tab-btn" data-target="view-manage">Управление</button>
+        <button class="tab-btn" data-target="view-collection">Коллекция</button>
+    </nav>
+
+    <!-- Основной контент -->
+    <main>
+        
+        <!-- Вкладка 1: Прогресс (Календарь Heatmap) -->
+        <section id="view-progress" class="view active">
+            <div class="heatmap-container">
+                <h2>Календарь активности</h2>
+                <p class="subtitle">Каждый квадратик — это день. Чем больше прочитано, тем ярче цвет.</p>
+                
+                <!-- Сюда JS будет генерировать сетку дней -->
+                <div id="heatmap-grid" class="heatmap-grid"></div>
+                
+                <!-- Легенда цветов -->
+                <div class="heatmap-legend">
+                    <span>Меньше</span>
+                    <div class="legend-box level-0"></div>
+                    <div class="legend-box level-1"></div>
+                    <div class="legend-box level-2"></div>
+                    <div class="legend-box level-3"></div>
+                    <div class="legend-box level-4"></div>
+                    <span>Больше</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Вкладка 2: Управление (Форма ввода) -->
+        <section id="view-manage" class="view">
+            <div class="form-container">
+                <h2>Добавить прогресс</h2>
+                
+                <form id="add-progress-form">
+                    <div class="form-group">
+                        <label for="book-select">Выберите книгу:</label>
+                        <select id="book-select" required>
+                            <option value="">-- Загрузка книг... --</option>
+                            <!-- Сюда JS список книг -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pages-input">Сколько страниц прочитано сегодня?</label>
+                        <input type="number" id="pages-input" min="1" placeholder="Например: 30" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Записать прогресс</button>
+                </form>
+
+                <hr>
+
+                <div class="finish-book-section">
+                    <h3>Дочитали книгу?</h3>
+                    <p>Отметьте книгу как прочитанную, чтобы получить гарантированный трофей и шанс выбить карточку персонажа!</p>
+                    <form id="finish-book-form">
+                        <div class="form-group">
+                            <select id="finish-book-select" required>
+                                <option value="">-- Выберите книгу --</option>
+                                <!-- Сюда JS вставить список НЕпрочитанных книг -->
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-success">Я дочитал книгу! 🎉</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Вкладка 3: Коллекция (Витрина трофеев) -->
+        <section id="view-collection" class="view">
+            <div class="collection-container">
+                <h2>Моя коллекция трофеев</h2>
+                
+                <div class="collection-stats">
+                    <p>Всего прочитано страниц: <span id="total-pages-display">0</span></p>
+                    <p>Собрано карточек: <span id="collection-count">0</span></p>
+                </div>
+
+                <!-- Фильтры для коллекции (по редкости) -->
+                <div class="filters">
+                    <button class="filter-btn active" data-rarity="all">Все</button>
+                    <button class="filter-btn" data-rarity="common">Обычные</button>
+                    <button class="filter-btn" data-rarity="epic">Эпические</button>
+                    <button class="filter-btn" data-rarity="legendary">Легендарные</button>
+                    <button class="filter-btn" data-rarity="achievement">Достижения</button>
+                </div>
+
+                <!-- Сетка для карточек -->
+                <div id="collection-grid" class="collection-grid">
+                    <!-- Сюда JS будет вставлять карточки (открытые и закрытые) -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Модальное окно для Gacha (выпадение карточки) -->
+    <div id="gacha-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Новая карточка!</h2>
+            <p id="gacha-message">Вы получили нового персонажа или трофей!</p>
+            
+            <!-- Контейнер для 3D-переворота карты -->
+            <div class="card-flip-container" id="card-flip">
+                <div class="card-flipper">
+                    <!-- Лицевая сторона (закрытая) -->
+                    <div class="card-front">
+                        <p>Нажми, чтобы открыть</p>
+                    </div>
+                    <!-- Обратная сторона (сам трофей) -->
+                    <div class="card-back" id="gacha-card-back">
+                        <!-- Тут будет картинка, имя, редкость -->
+                    </div>
+                </div>
+            </div>
+
+            <button id="close-modal-btn" class="btn-primary hidden">Забрать в коллекцию</button>
+        </div>
+    </div>
+
+
+    <script src="js/data.js"></script>
+    <!-- <script src="js/app.js"></script> -->
+</body>
+</html>
