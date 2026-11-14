@@ -23,3 +23,21 @@ tab_btn.forEach(function(btn) {
 });
 
 
+//генерация календаря (Heatmap)
+
+function generateHeatmap(){
+    const grid = document.getElementById('heatmap-grid')
+    // очищаем контейнер, чтобы при повторном вызове не дублировались квадратики-дни
+    grid.innerHTML='';
+    // генерим этот кважратик 365 раз
+    for (let i=0; i<365; i++){
+        const day=document.createElement('div')
+        day.classList.add('heatmap-day')
+        //подсказка при навдении на квадратик
+        day.title=`День ${i+1}`;
+        grid.appendChild(day);
+    }
+}
+
+
+generateHeatmap()
