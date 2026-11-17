@@ -109,6 +109,11 @@ main {
     span{
     font-size: 17px;
     }
+    h2{
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    }
 }
 
 @keyframes fadeIn {
