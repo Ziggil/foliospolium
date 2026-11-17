@@ -136,7 +136,26 @@ function populateBookSelects() {
     });
 }
 
+
+//функция чтобы в форме выбора прочитанной книги появлись сами книги
+const finishForm = document.getElementById('finish-book-form');
+const finishBookSelect = document.getElementById('finish-book-select');
+
+function populateFinishSelect(){
+    if (!finishBookSelect) return;
+    finishBookSelect.innerHTML=`<option value="">-- --</option>`;
+
+    booksData.forEach(function(book){
+        const option = document.createElement('option')
+        option.value=book.id;
+        option.textContent=book.title;
+        finishBookSelect.appendChild(option)
+    })
+}
+
+
+populateFinishSelect();
+
 populateBookSelects();
 
 generateHeatmap();
-

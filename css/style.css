@@ -95,12 +95,24 @@ main {
 }
 
 .view {
-    display: block; 
+    display: none; 
     animation: fadeIn 0.4s ease;
     margin-bottom: 50px;
 
     &.active {
         display: block; 
+    }
+
+    p{
+    margin-bottom: 30px;
+    margin-top: 20px;}
+    span{
+    font-size: 17px;
+    }
+    h2{
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
     }
 }
 

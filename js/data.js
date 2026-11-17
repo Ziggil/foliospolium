@@ -68,7 +68,6 @@ const bookCompletionCards = booksData.map(book => ({
 }));
 
 // 3. КАРТОЧКИ ПЕРСОНАЖЕЙ (Рандомный дроп из пула книги)
-// Я добавил по 3-4 персонажа для самых популярных новых книг
 const characterCards = [
     // Мастер и Маргарита (bookId: 1)
     { id: 2001, bookId: 1, name: "Кот Бегемот", rarity: "legendary", image: "url_char_1" },
