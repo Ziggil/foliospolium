@@ -102,6 +102,13 @@ main {
     &.active {
         display: block; 
     }
+
+    p{
+    margin-bottom: 30px;
+    margin-top: 20px;}
+    span{
+    font-size: 17px;
+    }
 }
 
 @keyframes fadeIn {
