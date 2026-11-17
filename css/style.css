@@ -95,7 +95,7 @@ main {
 }
 
 .view {
-    display: block; 
+    display: none; 
     animation: fadeIn 0.4s ease;
     margin-bottom: 50px;
 
