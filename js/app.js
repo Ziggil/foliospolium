@@ -113,10 +113,16 @@ if (addForm) {
         // Сохранение обратно в LocalStorage
         localStorage.setItem('dailyPages', JSON.stringify(dailyPages));
         
-        // Очищение поле ввода и перерисовывание календаря
+        //чтобы сайт запоминал, сколько всего страниц юзер прочитал за всё время,
+        let totalPages = parseInt(localStorage.getItem('totalPagesRead')) || 0;
+        totalPages += pages;
+        localStorage.setItem('totalPagesRead', totalPages);
+
+        // Очищение поле ввода и перерисовывание календаря и вызов функции вызова данных о прочитаннхы страницах и полученных карточках
         pagesInput.value = '';
         generateHeatmap();
-        
+        updateStats();
+
         alert(`Записано ${pages} страниц!`);
     });
 }
@@ -153,7 +159,21 @@ function populateFinishSelect(){
     })
 }
 
+// функция для вывода данных о прочитанных страницах и собранных данных
+function updateStats() {
 
+    const pagesDisplay = document.getElementById('total-pages-display');
+    const countDisplay = document.getElementById('collection-count');
+   
+    const totalPages = parseInt(localStorage.getItem('totalPagesRead')) || 0;
+    const userCollection = JSON.parse(localStorage.getItem('userCollection')) || [];
+    
+
+    if (pagesDisplay) pagesDisplay.textContent = totalPages;
+    if (countDisplay) countDisplay.textContent = userCollection.length;
+}
+
+updateStats ();
 populateFinishSelect();
 
 populateBookSelects();
