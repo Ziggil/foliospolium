@@ -33,6 +33,7 @@ function generateHeatmap(){
 
     // достаём данные из памяти браузера
     const dailyPages = JSON.parse(localStorage.getItem('dailyPages')) || {};
+    const dailyBooks = JSON.parse(localStorage.getItem('dailyBooks')) || {};
 
     // генерим этот кважратик 365 раз
     for (let i=0; i<365; i++){
@@ -69,8 +70,18 @@ function generateHeatmap(){
         }
 
 
-        //подсказка при навдении на квадратик
-        day.title = `${dateString}: ${pages} стр.`;
+        // //подсказка при навдении на квадратик
+        // day.title = `${dateString}: ${pages} стр.`;
+
+        
+        // Формируем подсказку с книгами
+        const booksForDay = dailyBooks[dateString] || [];
+        if (booksForDay.length > 0) {
+            day.title = `${dateString}: ${pages} стр. (${booksForDay.join(', ')})`;
+        } else {
+            day.title = `${dateString}: ${pages} стр.`;
+        }
+
         grid.appendChild(day);
     }
 }
@@ -89,11 +100,17 @@ if (addForm) {
     addForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        //  Получение данных
+        // Получение данных
         const bookId = bookSelect.value;
         const pages = parseInt(pagesInput.value);
+
+        // Проверка, что книга выбрана и страницы введены корректно
+        if (!bookId || isNaN(pages) || pages <= 0) {
+            alert('Выберите книгу и введите корректное количество страниц!');
+            return;
+        }
         
-         // получаем дату
+        // получаем дату
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -112,13 +129,28 @@ if (addForm) {
         
         // Сохранение обратно в LocalStorage
         localStorage.setItem('dailyPages', JSON.stringify(dailyPages));
+
+        // Сохраняем название книги за сегодняшний день
+        const selectedOption = bookSelect.options[bookSelect.selectedIndex];
+        const bookTitle = bookSelect.value ? selectedOption.textContent : '';
+
+        if (bookTitle) {
+            let dailyBooks = JSON.parse(localStorage.getItem('dailyBooks')) || {};
+            if (!dailyBooks[todayStr]) {
+                dailyBooks[todayStr] = [];
+            }
+            if (!dailyBooks[todayStr].includes(bookTitle)) {
+                dailyBooks[todayStr].push(bookTitle);
+            }
+            localStorage.setItem('dailyBooks', JSON.stringify(dailyBooks));
+        }
         
-        //чтобы сайт запоминал, сколько всего страниц юзер прочитал за всё время,
+        // чтобы сайт запоминал, сколько всего страниц юзер прочитал за всё время
         let totalPages = parseInt(localStorage.getItem('totalPagesRead')) || 0;
         totalPages += pages;
         localStorage.setItem('totalPagesRead', totalPages);
 
-        // Очищение поле ввода и перерисовывание календаря и вызов функции вызова данных о прочитаннхы страницах и полученных карточках
+        // Очищение поля ввода и перерисовывание календаря
         pagesInput.value = '';
         generateHeatmap();
         updateStats();
@@ -126,6 +158,7 @@ if (addForm) {
         alert(`Записано ${pages} страниц!`);
     });
 }
+
 
 
 function populateBookSelects() {
