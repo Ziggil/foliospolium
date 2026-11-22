@@ -70,7 +70,7 @@ function generateHeatmap(){
 
 
         //подсказка при навдении на квадратик
-        day.title=`День ${i+1}`;
+        day.title = `${dateString}: ${pages} стр.`;
         grid.appendChild(day);
     }
 }
@@ -132,9 +132,14 @@ function populateBookSelects() {
      // Если списка нет, выходим
     if (!bookSelect) return;
     bookSelect.innerHTML = '<option value="">-- Выберите книгу --</option>';
+
+    // Сортируем книги по алфавиту
+    const sortedBooks = [...booksData].sort(function(a, b) {
+        return a.title.localeCompare(b.title, 'ru');
+     });
     
-    // Используется глобальная переменная booksData из data.js
-    booksData.forEach(function(book) {
+    
+    sortedBooks.forEach(function(book) {
         const option = document.createElement('option');
         option.value = book.id; // ID книги
         option.textContent = book.title; // Название книги
@@ -151,12 +156,18 @@ function populateFinishSelect(){
     if (!finishBookSelect) return;
     finishBookSelect.innerHTML=`<option value="">-- --</option>`;
 
-    booksData.forEach(function(book){
+      // Сортируем книги по алфавиту
+    const sortedBooks = [...booksData].sort(function(a, b) {
+        return a.title.localeCompare(b.title, 'ru');
+     });
+
+    sortedBooks.forEach(function(book){
         const option = document.createElement('option')
         option.value=book.id;
         option.textContent=book.title;
         finishBookSelect.appendChild(option)
     })
+    
 }
 
 // функция для вывода данных о прочитанных страницах и собранных данных
