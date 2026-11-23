@@ -266,6 +266,43 @@ if (finishForm) {
 }
 
 
+//смена темы
+const themeToggleBtn = document.getElementById('theme-toggle');
+const hellThemeBtn = document.getElementById('hell-theme-btn');
+
+// 1. Восстанавливаем тему при загрузке страницы
+const savedTheme = localStorage.getItem('theme');
+
+if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+} else if (savedTheme === 'hell') {
+    document.body.classList.add('hell-theme');
+    if (hellThemeBtn) hellThemeBtn.classList.add('active');
+}
+
+// 2. Кнопка "Переключение темы" (Светлая <-> Тёмная)
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', function() {
+        document.body.classList.remove('hell-theme');
+        if (hellThemeBtn) hellThemeBtn.classList.remove('active');
+
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+}
+
+// 3. Кнопка "Событийные темы" (вкл/выкл hell-theme)
+if (hellThemeBtn) {
+    hellThemeBtn.addEventListener('click', function() {
+        document.body.classList.remove('light-theme');
+
+        const isHell = document.body.classList.toggle('hell-theme');
+        hellThemeBtn.classList.toggle('active', isHell);
+        
+        localStorage.setItem('theme', isHell ? 'hell' : 'dark');
+    });
+}
+
 
 
 updateStats ();
