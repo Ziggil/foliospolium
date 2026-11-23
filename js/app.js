@@ -34,6 +34,7 @@ function generateHeatmap(){
     // достаём данные из памяти браузера
     const dailyPages = JSON.parse(localStorage.getItem('dailyPages')) || {};
     const dailyBooks = JSON.parse(localStorage.getItem('dailyBooks')) || {};
+    const finishedBooks = JSON.parse(localStorage.getItem('finishedBooks')) || {};
 
     // генерим этот кважратик 365 раз
     for (let i=0; i<365; i++){
@@ -51,6 +52,8 @@ function generateHeatmap(){
         const dateString = `${year}-${month}-${dayOfMonth}`;
         // Ищем, сколько страниц прочитано в этот день (если нет, то 0)
         const pages=dailyPages[dateString] || 0;
+        const booksForDay = dailyBooks[dateString] || [];
+        const finishedForDay = finishedBooks[dateString] || [];
 
         const day=document.createElement('div')
         day.classList.add('heatmap-day')
@@ -72,16 +75,20 @@ function generateHeatmap(){
 
         // //подсказка при навдении на квадратик
         // day.title = `${dateString}: ${pages} стр.`;
-
+        let tooltipText = `${dateString}: ${pages} стр.`;
         
-        // Формируем подсказку с книгами
-        const booksForDay = dailyBooks[dateString] || [];
+        // Добавляем прочитанные за день книги в общую переменную tooltipText
         if (booksForDay.length > 0) {
-            day.title = `${dateString}: ${pages} стр. (${booksForDay.join(', ')})`;
-        } else {
-            day.title = `${dateString}: ${pages} стр.`;
+            tooltipText += ` (${booksForDay.join(', ')})`;
         }
 
+        // Добавляем дочитанные книги туда же
+        if (finishedForDay.length > 0) {
+            tooltipText += ` | Дочитано: ${finishedForDay.join(', ')}`;
+        }
+
+
+        day.title = tooltipText;
         grid.appendChild(day);
     }
 }
@@ -216,6 +223,50 @@ function updateStats() {
     if (pagesDisplay) pagesDisplay.textContent = totalPages;
     if (countDisplay) countDisplay.textContent = userCollection.length;
 }
+
+
+if (finishForm) {
+    finishForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const bookId = finishBookSelect.value;
+        if (!bookId) {
+            alert('Выберите книгу!');
+            return;
+        }
+
+        // Получаем название выбранной книги из выпадающего списка
+        const selectedOption = finishBookSelect.options[finishBookSelect.selectedIndex];
+        const bookTitle = selectedOption.textContent;
+
+        // Формируем сегодняшнюю дату (ГГГГ-ММ-ДД)
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
+        // Достаём объект с дочитанными книгами по датам
+        let finishedBooks = JSON.parse(localStorage.getItem('finishedBooks')) || {};
+
+        if (!finishedBooks[todayStr]) {
+            finishedBooks[todayStr] = [];
+        }
+        // Добавляем название книги, если её ещё нет в списке за сегодня
+        if (!finishedBooks[todayStr].includes(bookTitle)) {
+            finishedBooks[todayStr].push(bookTitle);
+        }
+
+        localStorage.setItem('finishedBooks', JSON.stringify(finishedBooks));
+
+        // Перерисовываем календарь, чтобы подсказка сразу обновилась
+        generateHeatmap();
+        alert(`Книга «${bookTitle}» отмечена как прочитанная!`);
+    });
+}
+
+
+
 
 updateStats ();
 populateFinishSelect();
