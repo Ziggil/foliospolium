@@ -1,11 +1,9 @@
-
-// переключение вкладов SPA
+// переключение вкладок SPA
 const tab_btn=document.querySelectorAll(".tab-btn")
 const views=document.querySelectorAll(".view")
 
 tab_btn.forEach(function(btn) {
     btn.addEventListener('click', function(e){
-        // Убираем класс active у ВСЕХ кнопок (используй цикл forEach)
         tab_btn.forEach(function(b){
             b.classList.remove('active');
         });
@@ -19,38 +17,30 @@ tab_btn.forEach(function(btn) {
         if(targetView){
             targetView.classList.add('active');
         }
-        
     });
 });
 
 
-//генерация календаря (Heatmap)
-
+// генерация календаря (Heatmap)
 function generateHeatmap(){
     const grid = document.getElementById('heatmap-grid')
-    // очищаем контейнер, чтобы при повторном вызове не дублировались квадратики-дни
     grid.innerHTML='';
 
-    // достаём данные из памяти браузера
     const dailyPages = JSON.parse(localStorage.getItem('dailyPages')) || {};
     const dailyBooks = JSON.parse(localStorage.getItem('dailyBooks')) || {};
     const finishedBooks = JSON.parse(localStorage.getItem('finishedBooks')) || {};
 
-    // генерим этот кважратик 365 раз
     for (let i=0; i<365; i++){
-        // ищем текущий год, находим 1 января этого года и к этому 1 января прибавляем i дней, чтоыб у каждого квадрата была своя уникальная дата 
         const currentYear=new Date().getFullYear();
-
         const startDate=new Date(currentYear, 0,1);
-
         const date=new Date(startDate)
         date.setDate(startDate.getDate()+i)
-        // Превращаем дату в строку формата "2026-11-14"
+        
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const dayOfMonth = String(date.getDate()).padStart(2, '0');
         const dateString = `${year}-${month}-${dayOfMonth}`;
-        // Ищем, сколько страниц прочитано в этот день (если нет, то 0)
+        
         const pages=dailyPages[dateString] || 0;
         const booksForDay = dailyBooks[dateString] || [];
         const finishedForDay = finishedBooks[dateString] || [];
@@ -58,7 +48,6 @@ function generateHeatmap(){
         const day=document.createElement('div')
         day.classList.add('heatmap-day')
 
-        // В зависимости от количества страниц добавляется уровень цвета
         if (pages>0 && pages <=10){
             day.classList.add('level-1');
         } else if (pages>10 && pages<=30){
@@ -68,25 +57,17 @@ function generateHeatmap(){
         } else if (pages >60){
             day.classList.add('level-4');
         } else {
-            // если 0 страниц то серый
             day.classList.add('level-0')
         }
 
-
-        // //подсказка при навдении на квадратик
-        // day.title = `${dateString}: ${pages} стр.`;
         let tooltipText = `${dateString}: ${pages} стр.`;
         
-        // Добавляем прочитанные за день книги в общую переменную tooltipText
         if (booksForDay.length > 0) {
             tooltipText += ` (${booksForDay.join(', ')})`;
         }
-
-        // Добавляем дочитанные книги туда же
         if (finishedForDay.length > 0) {
             tooltipText += ` | Дочитано: ${finishedForDay.join(', ')}`;
         }
-
 
         day.title = tooltipText;
         grid.appendChild(day);
@@ -94,50 +75,38 @@ function generateHeatmap(){
 }
 
 
-
-
-// обработчик формы
-// Находим элементы
+// обработчик формы добавления прогресса
 const addForm = document.getElementById('add-progress-form');
 const bookSelect = document.getElementById('book-select');
 const pagesInput = document.getElementById('pages-input');
 
-// Вешаем событие submit на форму
 if (addForm) {
     addForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Получение данных
         const bookId = bookSelect.value;
         const pages = parseInt(pagesInput.value);
 
-        // Проверка, что книга выбрана и страницы введены корректно
         if (!bookId || isNaN(pages) || pages <= 0) {
             alert('Выберите книгу и введите корректное количество страниц!');
             return;
         }
         
-        // получаем дату
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         const todayStr = `${year}-${month}-${day}`;
         
-        // Достаем старые данные из LocalStorage (или создаем пустой объект)
         let dailyPages = JSON.parse(localStorage.getItem('dailyPages')) || {};
         
-        // Добавляем страницы к сегодняшнему дню
         if (dailyPages[todayStr]) {
             dailyPages[todayStr] += pages;
         } else {
             dailyPages[todayStr] = pages;
         }
-        
-        // Сохранение обратно в LocalStorage
         localStorage.setItem('dailyPages', JSON.stringify(dailyPages));
 
-        // Сохраняем название книги за сегодняшний день
         const selectedOption = bookSelect.options[bookSelect.selectedIndex];
         const bookTitle = bookSelect.value ? selectedOption.textContent : '';
 
@@ -152,15 +121,57 @@ if (addForm) {
             localStorage.setItem('dailyBooks', JSON.stringify(dailyBooks));
         }
         
-        // чтобы сайт запоминал, сколько всего страниц юзер прочитал за всё время
         let totalPages = parseInt(localStorage.getItem('totalPagesRead')) || 0;
         totalPages += pages;
         localStorage.setItem('totalPagesRead', totalPages);
 
-        // Очищение поля ввода и перерисовывание календаря
         pagesInput.value = '';
         generateHeatmap();
         updateStats();
+// логика Gacha (шанс 40% при вводе страниц)
+const gachaChance = Math.floor(Math.random() * 100);
+console.log("Шанс выпадения:", gachaChance); // ВРЕМЕННО
+
+let userCollectionLocal = JSON.parse(localStorage.getItem('userCollection')) || [];
+
+if (gachaChance <= 40) {
+    const characterMatch = characterCards.filter(function(char){
+        return char.bookId == bookId;
+    });
+    console.log("Персонажи для этой книги:", characterMatch); // ВРЕМЕННО
+
+    const randomNumber = Math.floor(Math.random() * 100) + 1;
+    console.log("Случайное число для редкости:", randomNumber); // ВРЕМЕННО
+
+    let filteredCards = [];
+    
+    if (randomNumber <= 60){
+        filteredCards = characterMatch.filter(function(char) { return char.rarity === "common"; });
+    } else if (randomNumber > 60 && randomNumber <= 90) {
+        filteredCards = characterMatch.filter(function(char) { return char.rarity === "epic"; });
+    } else if (randomNumber > 90){
+        filteredCards = characterMatch.filter(function(char) { return char.rarity === "legendary"; });
+    }
+
+    if (filteredCards.length === 0) {
+        filteredCards = characterMatch;
+    }
+    
+    console.log("Карточки после фильтрации:", filteredCards); // ВРЕМЕННО
+
+    if (filteredCards.length > 0) {
+        const randomCard = filteredCards[Math.floor(Math.random() * filteredCards.length)];
+        console.log("Выпала карточка:", randomCard); // ВРЕМЕННО
+        
+        if (!userCollectionLocal.includes(randomCard.id)) {
+            userCollectionLocal.push(randomCard.id);
+            localStorage.setItem('userCollection', JSON.stringify(userCollectionLocal));
+            // showGachaModal(randomCard);
+        } else {
+            console.log("Эта карточка уже есть в коллекции!"); // ВРЕМЕННО
+        }
+    }
+}
 
         alert(`Записано ${pages} страниц!`);
     });
@@ -169,108 +180,89 @@ if (addForm) {
 
 
 function populateBookSelects() {
-     // Если списка нет, выходим
     if (!bookSelect) return;
     bookSelect.innerHTML = '<option value="">-- Выберите книгу --</option>';
-
-    // Сортируем книги по алфавиту
     const sortedBooks = [...booksData].sort(function(a, b) {
         return a.title.localeCompare(b.title, 'ru');
      });
-    
-    
     sortedBooks.forEach(function(book) {
         const option = document.createElement('option');
-        option.value = book.id; // ID книги
-        option.textContent = book.title; // Название книги
+        option.value = book.id; 
+        option.textContent = book.title; 
         bookSelect.appendChild(option);
     });
 }
 
 
-//функция чтобы в форме выбора прочитанной книги появлись сами книги
+// функция для второго списка (Дочитал книгу)
 const finishForm = document.getElementById('finish-book-form');
 const finishBookSelect = document.getElementById('finish-book-select');
 
 function populateFinishSelect(){
     if (!finishBookSelect) return;
     finishBookSelect.innerHTML=`<option value="">-- --</option>`;
-
-      // Сортируем книги по алфавиту
     const sortedBooks = [...booksData].sort(function(a, b) {
         return a.title.localeCompare(b.title, 'ru');
      });
-
     sortedBooks.forEach(function(book){
         const option = document.createElement('option')
         option.value=book.id;
         option.textContent=book.title;
         finishBookSelect.appendChild(option)
     })
-    
 }
 
-// функция для вывода данных о прочитанных страницах и собранных данных
-function updateStats() {
 
+// функция для вывода статистики
+function updateStats() {
     const pagesDisplay = document.getElementById('total-pages-display');
     const countDisplay = document.getElementById('collection-count');
-   
     const totalPages = parseInt(localStorage.getItem('totalPagesRead')) || 0;
     const userCollection = JSON.parse(localStorage.getItem('userCollection')) || [];
-    
-
     if (pagesDisplay) pagesDisplay.textContent = totalPages;
     if (countDisplay) countDisplay.textContent = userCollection.length;
 }
 
-
+// обработчик формы дочитывания книги 
 if (finishForm) {
     finishForm.addEventListener('submit', function(e) {
         e.preventDefault();
-
         const bookId = finishBookSelect.value;
+
         if (!bookId) {
             alert('Выберите книгу!');
             return;
         }
 
-        // Получаем название выбранной книги из выпадающего списка
         const selectedOption = finishBookSelect.options[finishBookSelect.selectedIndex];
         const bookTitle = selectedOption.textContent;
 
-        // Формируем сегодняшнюю дату (ГГГГ-ММ-ДД)
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         const todayStr = `${year}-${month}-${day}`;
 
-        // Достаём объект с дочитанными книгами по датам
         let finishedBooks = JSON.parse(localStorage.getItem('finishedBooks')) || {};
 
         if (!finishedBooks[todayStr]) {
             finishedBooks[todayStr] = [];
         }
-        // Добавляем название книги, если её ещё нет в списке за сегодня
         if (!finishedBooks[todayStr].includes(bookTitle)) {
             finishedBooks[todayStr].push(bookTitle);
         }
 
         localStorage.setItem('finishedBooks', JSON.stringify(finishedBooks));
-
-        // Перерисовываем календарь, чтобы подсказка сразу обновилась
         generateHeatmap();
         alert(`Книга «${bookTitle}» отмечена как прочитанная!`);
     });
 }
 
 
-//смена темы
+// смена темы
 const themeToggleBtn = document.getElementById('theme-toggle');
 const hellThemeBtn = document.getElementById('hell-theme-btn');
 
-// 1. Восстанавливаем тему при загрузке страницы
 const savedTheme = localStorage.getItem('theme');
 
 if (savedTheme === 'light') {
@@ -280,34 +272,27 @@ if (savedTheme === 'light') {
     if (hellThemeBtn) hellThemeBtn.classList.add('active');
 }
 
-// 2. Кнопка "Переключение темы" (Светлая <-> Тёмная)
 if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', function() {
         document.body.classList.remove('hell-theme');
         if (hellThemeBtn) hellThemeBtn.classList.remove('active');
-
         const isLight = document.body.classList.toggle('light-theme');
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
     });
 }
 
-// 3. Кнопка "Событийные темы" (вкл/выкл hell-theme)
 if (hellThemeBtn) {
     hellThemeBtn.addEventListener('click', function() {
         document.body.classList.remove('light-theme');
-
         const isHell = document.body.classList.toggle('hell-theme');
         hellThemeBtn.classList.toggle('active', isHell);
-        
         localStorage.setItem('theme', isHell ? 'hell' : 'dark');
     });
 }
 
 
-
-updateStats ();
+// Запуск при загрузке
+updateStats();
 populateFinishSelect();
-
 populateBookSelects();
-
 generateHeatmap();
