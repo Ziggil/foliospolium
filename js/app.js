@@ -253,7 +253,28 @@ if (finishForm) {
         }
 
         localStorage.setItem('finishedBooks', JSON.stringify(finishedBooks));
+
+        // Выдача карточки за прочтение
+        const completionCard = bookCompletionCards.find(function(card) {
+            return card.bookId == bookId;
+        });
+
+        let userCollectionLocal = JSON.parse(localStorage.getItem('userCollection')) || [];
+
+        if (completionCard && !userCollectionLocal.includes(completionCard.id)) {
+            userCollectionLocal.push(completionCard.id);
+            localStorage.setItem('userCollection', JSON.stringify(userCollectionLocal));
+            
+            // ВРЕМЕННО: 
+            console.log("Выдана карточка за прочтение:", completionCard);
+            
+            // showGachaModal(completionCard); 
+        } else if (completionCard) {
+            console.log("Эта карточка уже есть в коллекции:", completionCard.title);
+        }
+
         generateHeatmap();
+        
         alert(`Книга «${bookTitle}» отмечена как прочитанная!`);
     });
 }
