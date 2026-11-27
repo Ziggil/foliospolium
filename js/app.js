@@ -128,11 +128,26 @@ if (addForm) {
         pagesInput.value = '';
         generateHeatmap();
         updateStats();
-// логика Gacha (шанс 40% при вводе страниц)
+
+// логика выдачи карточек персонажей, Gacha (шанс 40% при вводе страниц)
 const gachaChance = Math.floor(Math.random() * 100);
 console.log("Шанс выпадения:", gachaChance); // ВРЕМЕННО
 
 let userCollectionLocal = JSON.parse(localStorage.getItem('userCollection')) || [];
+
+//выдача карточек общих достижений
+achievementCards.forEach(function(achievement) {
+
+    if (totalPages >= achievement.pagesRequired && !userCollectionLocal.includes(achievement.id)) {
+        userCollectionLocal.push(achievement.id);
+        localStorage.setItem('userCollection', JSON.stringify(userCollectionLocal));
+        
+        // ВРЕМЕННО: 
+        console.log("Выдано достижение:", achievement.title);
+        
+        // showGachaModal(achievement);
+    }
+});
 
 if (gachaChance <= 40) {
     const characterMatch = characterCards.filter(function(char){
