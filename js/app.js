@@ -17,6 +17,10 @@ tab_btn.forEach(function(btn) {
         if(targetView){
             targetView.classList.add('active');
         }
+
+        if (targetID === 'view-collection') {
+            renderCollection(); 
+        }
     });
 });
 
@@ -237,24 +241,33 @@ function updateStats() {
     if (pagesDisplay) pagesDisplay.textContent = totalPages;
     if (countDisplay) countDisplay.textContent = userCollection.length;
 
+}
+
+
     // рендерим карточки
-    function renderColletion() {
-        const colletionCrid=document.getElementById('colletion-grid')
-        if(!colletionCrid) return;
+    function renderCollection() {
+        const collectionGrid = document.getElementById('collection-grid');
+        if (!collectionGrid) return;
+        
+        collectionGrid.innerHTML = '';
+        const allCards = [...characterCards, ...bookCompletionCards, ...achievementCards];
+        const userCollection = JSON.parse(localStorage.getItem('userCollection')) || [];
 
-        colletionCrid.innerHTML = '';
-        const allCards=[...characterCards, ...bookCompletionCards, ...achievementCards]
-        const userColletion = JSON.parse(localStorage.getItem('userCollection')) || [];
-
-        allCards.forEach(function(card){
-            const isUnlocked=userCollection.includes(card.id)
-            const cardRarity=card.rarity || 'achievement'
-
-            const cardDiv=document.createElement('div')
-            // cardDiv.className=`card-item`
-        })
-
-    }
+        allCards.forEach(function(card) {
+            const isUnlocked = userCollection.includes(card.id);
+            const cardRarity = card.rarity || 'achievement';
+            
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `card-item ${cardRarity} ${isUnlocked ? '' : 'locked'}`;
+            
+            cardDiv.innerHTML = `
+                <div class="card-img">${isUnlocked ? '📖' : '❓'}</div>
+                <h4>${isUnlocked ? (card.name || card.title) : '???'}</h4>
+                <p class="rarity-label">${isUnlocked ? cardRarity : 'Секрет'}</p>
+            `;
+        
+        collectionGrid.appendChild(cardDiv);
+    });
 }
 
 // обработчик формы дочитывания книги 
@@ -354,3 +367,4 @@ updateStats();
 populateFinishSelect();
 populateBookSelects();
 generateHeatmap();
+renderCollection();
