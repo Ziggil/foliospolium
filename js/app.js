@@ -236,6 +236,25 @@ function updateStats() {
     const userCollection = JSON.parse(localStorage.getItem('userCollection')) || [];
     if (pagesDisplay) pagesDisplay.textContent = totalPages;
     if (countDisplay) countDisplay.textContent = userCollection.length;
+
+    // рендерим карточки
+    function renderColletion() {
+        const colletionCrid=document.getElementById('colletion-grid')
+        if(!colletionCrid) return;
+
+        colletionCrid.innerHTML = '';
+        const allCards=[...characterCards, ...bookCompletionCards, ...achievementCards]
+        const userColletion = JSON.parse(localStorage.getItem('userCollection')) || [];
+
+        allCards.forEach(function(card){
+            const isUnlocked=userCollection.includes(card.id)
+            const cardRarity=card.rarity || 'achievement'
+
+            const cardDiv=document.createElement('div')
+            // cardDiv.className=`card-item`
+        })
+
+    }
 }
 
 // обработчик формы дочитывания книги 
@@ -325,6 +344,9 @@ if (hellThemeBtn) {
         localStorage.setItem('theme', isHell ? 'hell' : 'dark');
     });
 }
+
+
+
 
 
 // Запуск при загрузке
