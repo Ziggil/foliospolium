@@ -540,3 +540,45 @@ body.hell-theme h1 { color: rgb(255, 115, 0); }
 body.hell-theme #view-progress {
     border-color: #d8d513;
 }
+
+
+/* Инфо-панель для календаря */
+.day-info-panel {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: var(--surface-color);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    text-align: left;
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-main);
+    display: none; 
+}
+
+.day-info-panel.active {
+    display: block; 
+}
+
+.day-info-panel h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--accent);
+    font-family: 'Playfair Display', serif;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.day-info-panel p {
+    margin: 8px 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.day-info-panel strong {
+    color: var(--gold);
+}
+
+.day-info-panel .no-info {
+    color: var(--text-muted);
+    font-style: italic;
+}

@@ -65,6 +65,27 @@ function generateHeatmap(){
         }
 
         let tooltipText = `${dateString}: ${pages} стр.`;
+
+        //инфо-окно
+    day.addEventListener('click', function() {
+        const dayInfoPanel = document.getElementById("day-info-panel"); 
+    
+    // есть ли хоть какая-то информация за этот день
+    if (pages > 0 || booksForDay.length > 0 || finishedForDay.length > 0) {
+        // Если информация есть - выводим 
+        dayInfoPanel.innerHTML = `
+            <h3>${dateString}</h3>
+            <p>Прочитано страниц: <strong>${pages}</strong></p>
+            <p>Книги: <strong>${booksForDay.length > 0 ? booksForDay.join(', ') : 'нет'}</strong></p>
+            <p>Дочитано: <strong>${finishedForDay.length > 0 ? finishedForDay.join(', ') : 'нет'}</strong></p>
+        `;
+        dayInfoPanel.classList.add('active'); 
+    } else {
+        // Если ничего нет 
+        dayInfoPanel.innerHTML = `<h3>${dateString}</h3><p class="no-info">В этот день ничего не читалось.</p>`;
+        dayInfoPanel.classList.add('active');
+    }
+});
         
         if (booksForDay.length > 0) {
             tooltipText += ` (${booksForDay.join(', ')})`;
