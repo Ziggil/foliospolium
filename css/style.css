@@ -131,6 +131,11 @@ main {
     animation: fadeIn 0.4s ease;
     margin-bottom: 50px;
 
+    p{
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
     &.active {
         display: block; 
     }
